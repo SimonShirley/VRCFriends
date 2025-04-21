@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using VRCFriends.Business.Interfaces;
 using VRCFriends.Business.Interfaces.Friends;
 using VRChat.API.Api;
@@ -36,12 +37,16 @@ namespace VRCFriends.Business.Models
 
         public DateTime LastRefresh { get; private set; }
 
-        public void RefreshFriendsList()
+        public async Task RefreshFriendsListAsync()
         {
             try
             {
-                UpdateFriendsList(false);
-                UpdateFriendsList(true);
+                var offlineFriends = await GetFriendsListAsync(false);
+                var onlineFriends = await GetFriendsListAsync(true);
+
+                LastRefresh = DateTime.Now;
+
+                _stateMediator.OnFriendsListUpdated(offlineFriends.Union(onlineFriends).ToList());
             }
             catch (ApiException apiEx)
             {
@@ -56,18 +61,16 @@ namespace VRCFriends.Business.Models
             }
         }
 
-        private void UpdateFriendsList(bool offline)
+        private async Task<IList<LimitedUserDto>> GetFriendsListAsync(bool offline)
         {
             IList<LimitedUserDto> friendDtoList = new List<LimitedUserDto>();
 
             var friendsList = _friendsApi.GetFriends(offline: offline);
 
             foreach (LimitedUser friend in friendsList)
-                friendDtoList.Add(ConvertApiLimitedUserToDtoUser(friend));
+                friendDtoList.Add(await ConvertApiLimitedUserToDtoUserAsync(friend));
 
-            LastRefresh = DateTime.Now;
-
-            _stateMediator.OnFriendsListUpdated(friendDtoList);
+            return friendDtoList;
         }
 
         public int GetOnlineFriendsCount()
@@ -75,7 +78,7 @@ namespace VRCFriends.Business.Models
             return _stateMediator.FriendsDictionary.Count(friend => friend.Value.OnlineStatus == OnlineStatusEnum.IsOnline);
         }
 
-        private LimitedUserDto ConvertApiLimitedUserToDtoUser(LimitedUser user)
+        private async Task<LimitedUserDto> ConvertApiLimitedUserToDtoUserAsync(LimitedUser user)
         {
             var avatarUrl = user.ProfilePicOverride;
 
@@ -85,9 +88,9 @@ namespace VRCFriends.Business.Models
             LimitedUserDto friend = new LimitedUserDto()
             {
                 Id = user.Id,
-                CurrentAvatarImage = GetAvatarImage(avatarUrl),
+                CurrentAvatarImage = await GetAvatarImageAsync(avatarUrl),
                 DisplayName = user.DisplayName,
-                Location = GetUserLocation(user),
+                Location = await GetUserLocationAsync(user),
                 OnlineStatus = GetUserOnlineStatus(user),
                 Status = user.Status
             };
@@ -95,7 +98,7 @@ namespace VRCFriends.Business.Models
             return friend;
         }
 
-        private Bitmap GetAvatarImage(string currentAvatarImageUrl)
+        private async Task<Bitmap> GetAvatarImageAsync(string currentAvatarImageUrl)
         {
             HttpClient httpClient = null;
             Stream webStream = null;
@@ -122,12 +125,12 @@ namespace VRCFriends.Business.Models
 
                 httpClient.DefaultRequestHeaders.Add("User-Agent", configuration.UserAgent);
 
-                webStream = httpClient.GetStreamAsync(currentAvatarImageUrl).Result;
+                webStream = await httpClient.GetStreamAsync(currentAvatarImageUrl).ConfigureAwait(false);
 
                 var bitmap = new Bitmap(webStream);
                 bitmap?.Save(cachedFilename, ImageFormat.Png);
 
-                webStream.Flush();
+                await webStream.FlushAsync();
                 webStream.Close();
 
                 return bitmap;
@@ -156,7 +159,7 @@ namespace VRCFriends.Business.Models
             }
         }
 
-        private InstanceDto GetUserLocation(LimitedUser user)
+        private async Task<InstanceDto> GetUserLocationAsync(LimitedUser user)
         {
             if (GetUserOnlineStatus(user) == OnlineStatusEnum.IsOnline)
             {
@@ -177,7 +180,7 @@ namespace VRCFriends.Business.Models
                             var instanceWorldId = worldInstanceData[0].Split(':')[0];
                             var instanceData = user.Location.Substring(instanceWorldId.Length + 1);
 
-                            var worldInstance = _instancesApi.GetInstance(instanceWorldId, instanceData);
+                            var worldInstance = await _instancesApi.GetInstanceAsync(instanceWorldId, instanceData).ConfigureAwait(false);
 
                             if (worldInstance != null)
                             {
@@ -206,5 +209,7 @@ namespace VRCFriends.Business.Models
 
             return OnlineStatusEnum.IsOffline;
         }
+
+        public void RefreshFriendsList() => RefreshFriendsListAsync().RunSynchronously();
     }
 }

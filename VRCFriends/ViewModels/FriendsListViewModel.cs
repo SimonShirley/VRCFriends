@@ -27,7 +27,7 @@ namespace VRCFriends.ViewModels
             _friendsModel = friendsModel;
 
             if (friendsModel is not null)
-                _timer = new Timer(new TimerCallback((state) => _friendsModel?.RefreshFriendsList()), null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
+                _timer = new Timer(new TimerCallback((state) => _friendsModel?.RefreshFriendsListAsync()), null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
         }
 
         private void StateMediator_FriendsListUpdated()

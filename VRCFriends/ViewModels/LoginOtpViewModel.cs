@@ -33,17 +33,17 @@ namespace VRCFriends.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(ValidateOtpCanExecute))]
-        public void ValidateOtp(string otpCode)
+        public async Task ValidateOtpAsync(string otpCode)
         {
             try
             {
-                bool loginVerified = _loginModel.ValidateOtp(otpCode, _loginModel.RequiresEmailOtp);
+                bool loginVerified = await _loginModel.ValidateOtpAsync(otpCode, _loginModel.RequiresEmailOtp).ConfigureAwait(false);
 
                 if (loginVerified)
                 {
                     OtpCode = string.Empty;
 
-                    CurrentUser currentUser = _loginModel.GetCurrentUser();
+                    CurrentUser currentUser = await _loginModel.GetCurrentUserAsync();
                     Debug.WriteLine("Logged in as {0}", currentUser.DisplayName);
 
                     _stateMediator.OnUserOtpVerified();

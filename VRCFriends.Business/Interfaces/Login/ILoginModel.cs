@@ -1,4 +1,5 @@
 ﻿using System.Security;
+using System.Threading.Tasks;
 using VRChat.API.Model;
 
 namespace VRCFriends.Business.Interfaces.Login
@@ -8,7 +9,10 @@ namespace VRCFriends.Business.Interfaces.Login
         bool RequiresEmailOtp { get; set; }
 
         CurrentUser GetCurrentUser();
-        bool LoginUser(string username, SecureString password, out bool requiresEmailTotp);
+        Task<CurrentUser> GetCurrentUserAsync();
+        bool LoginUser(string username, SecureString password);
+        Task<bool> LoginUserAsync(string username, SecureString password);
         bool ValidateOtp(string totpCode, bool requiresEmailTotp);
+        Task<bool> ValidateOtpAsync(string totpCode, bool requiresEmailTotp);
     }
 }

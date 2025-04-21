@@ -44,10 +44,9 @@ namespace VRCFriends.ViewModels
             {
                 ErrorMessage = string.Empty;
 
-                _loginModel.LoginUser(VrcUsername ?? string.Empty, VrcPassword, out bool requiresEmailTotp);
-                _loginModel.RequiresEmailOtp = requiresEmailTotp;
+                _loginModel.LoginUserAsync(VrcUsername ?? string.Empty, VrcPassword);
 
-                _stateMediator.OnUsernamePasswordAccepted(requiresEmailTotp);
+                _stateMediator.OnUsernamePasswordAccepted(_loginModel.RequiresEmailOtp);
             }
             catch (ApiException apiEx)
             {

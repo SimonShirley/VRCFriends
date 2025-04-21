@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Threading.Tasks;
 
 namespace VRCFriends.Business.Interfaces.Friends
 {
@@ -9,5 +10,6 @@ namespace VRCFriends.Business.Interfaces.Friends
 
         int GetOnlineFriendsCount();
         void RefreshFriendsList();
+        Task RefreshFriendsListAsync();
     }
 }
