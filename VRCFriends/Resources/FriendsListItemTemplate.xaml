@@ -1,0 +1,94 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:apiModel="clr-namespace:VRChat.API.Model;assembly=VRChat.API"
+    xmlns:Models="clr-namespace:VRCFriends.Business.Models;assembly=VRCFriends.Business"
+    xmlns:converters="clr-namespace:VRCFriends.Converters"
+    mc:Ignorable="d">
+
+    <converters:StatusToColorConverter x:Key="StatusToColorConverter"/>
+    <converters:BitmapToBitmapImageConverter x:Key="BitmapToBitmapImageConverter" />
+    <converters:StatusToVisibilityConverter x:Key="StatusToVisibilityConverter" />
+
+    <DataTemplate x:Key="FriendListItem" d:DataType="Models:LimitedUserDto">
+        <Border BorderBrush="LightGray" CornerRadius="8">
+            <Grid Margin="10" Width="200" ScrollViewer.CanContentScroll="True">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="150" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                <WrapPanel
+                    Grid.Row="0"
+                    Background="DarkBlue">
+
+                    <Image
+                        Source="{Binding CurrentAvatarImage, Converter={StaticResource BitmapToBitmapImageConverter}}"
+                        ClipToBounds="True"
+                        Stretch="UniformToFill"
+                    />
+                </WrapPanel>
+
+                <TextBlock
+                    x:Name="Username"
+                    Text="{Binding DisplayName}"
+                    VerticalAlignment="Center"
+                    Grid.Row="1"
+                    FontSize="18"
+                    FontStyle="Normal"
+                    FontWeight="Normal"
+                    Margin="0 0 0 5"
+                    d:Text="Username"/>
+
+                <StackPanel
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    Grid.Row="2"
+                    Margin="0 0 0 5"
+                    Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}}">
+
+                    <Canvas
+                        Width="15" Height="15"
+                        Background="{Binding Status, Converter={StaticResource StatusToColorConverter}}"
+                        d:Background="Green"/>
+
+                    <TextBlock
+                        x:Name="StatusText"
+                        Text="{Binding Status}"
+                        Margin="10 0 0 0"
+                        d:Text="Online"/>
+                </StackPanel>
+
+                <TextBlock
+                    x:Name="WorldName"
+                    Text="{Binding Location.WorldName}"
+                    VerticalAlignment="Center"
+                    Grid.Row="3"
+                    Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}}"
+                    d:Text="In a private world"/>
+
+                <TextBlock
+                    x:Name="WorldRegion"
+                    Text="{Binding Location.RegionString}"
+                    VerticalAlignment="Center"
+                    Grid.Row="4"
+                    Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}}"
+                    d:Text="Us"/>
+
+                <TextBlock
+                    x:Name="WorldInstanceType"
+                    Text="{Binding Location.InstanceTypeString}"
+                    VerticalAlignment="Center"
+                    Grid.Row="5"
+                    Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}}"
+                    d:Text="Public"/>
+            </Grid>
+        </Border>
+    </DataTemplate>
+</ResourceDictionary>

@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="VRCFriends.UserControls.FriendsListUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VRCFriends.UserControls"
+             xmlns:viewmodels="clr-namespace:VRCFriends.ViewModels"
+             xmlns:model="clr-namespace:VRChat.API.Model;assembly=VRChat.API"
+             xmlns:models="clr-namespace:VRCFriends.Business.Models;assembly=VRCFriends.Business"
+             mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="400"
+             d:Background="White"
+             d:DataContext="{d:DesignInstance Type=viewmodels:FriendsListControlViewModel}">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/FriendsListItemTemplate.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel Margin="0 0 0 20">
+        <Button
+            x:Name="btnGroupHeader"
+            d:Content="Online"
+            FontSize="16"
+            Margin="0"
+            Padding="5"
+            HorizontalContentAlignment="Left">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFE1FBFE"/>
+                    <GradientStop Color="#FF61C7C3" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+            <TextBlock
+                x:Name="txtGroupHeader"
+                Text="{Binding GroupHeader}"/>
+        </Button>
+
+        <ListView
+            x:Name="listViewFriendsCollection"
+            d:Height="200" 
+            ItemsSource="{Binding FriendsCollection}"
+            ItemTemplate="{DynamicResource FriendListItem}"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            Background="Transparent"
+            BorderThickness="1,0,1,1"
+            VerticalAlignment="Top"
+            Margin="0,0,0,10" 
+            VerticalContentAlignment="Top"
+            ScrollViewer.CanContentScroll="True"
+            SelectionMode="Single">
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Margin="10" Background="Transparent"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ListView>
+    </StackPanel>
+</UserControl>

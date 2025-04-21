@@ -1,0 +1,27 @@
+﻿<Window x:Class="VRCFriends.Views.MainWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VRCFriends"
+        xmlns:vm="clr-namespace:VRCFriends.ViewModels"
+        xmlns:vw="clr-namespace:VRCFriends.Views"
+        mc:Ignorable="d"
+        d:Background="White"
+        d:Height="450" d:Width="800"
+        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
+        Title="VRCFriends - A VRChat Friends List App" Height="450" Width="800"      
+        Background="AliceBlue">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:LoginUsernamePasswordViewModel}">
+            <vw:LoginUsernamePasswordView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LoginOtpViewModel}">
+            <vw:LoginOtpView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FriendsListViewModel}">
+            <vw:FriendsListView />
+        </DataTemplate>
+    </Window.Resources>
+    <ContentControl Content="{Binding CurrentViewModel}" />
+</Window>

@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="VRCFriends.Views.FriendsListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VRCFriends.Views"
+             xmlns:viewmodels="clr-namespace:VRCFriends.ViewModels"
+             xmlns:converters="clr-namespace:VRCFriends.Converters"
+             xmlns:apiModel="clr-namespace:VRChat.API.Model;assembly=VRChat.API"
+             xmlns:userControls="clr-namespace:VRCFriends.UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:Background="White"
+             d:DataContext="{d:DesignInstance Type=viewmodels:FriendsListViewModel}">
+
+    <DockPanel
+        Margin="10"
+        LastChildFill="True">
+
+        <StackPanel
+            Orientation="Horizontal"
+            DockPanel.Dock="Bottom">
+            
+            <TextBlock
+                Text="Last Updated:"
+                d:Text="Last refreshed"
+                Padding="0 10 0 0"
+                VerticalAlignment="Bottom"
+                />
+            <TextBlock
+                Text="{Binding LastRefresh}"
+                d:Text="01 January 2025 00:35"
+                Margin="10 0 0 0"
+                VerticalAlignment="Bottom"
+                />
+        </StackPanel>
+
+        <ScrollViewer
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto"
+            Padding="20">
+            
+            <StackPanel>
+                <userControls:FriendsListUserControl
+                    GroupHeader="Online"
+                    FriendsCollection="{Binding OnlineFriendsCollection}"
+                    ShowFriendsList="True" />
+
+                <userControls:FriendsListUserControl
+                        GroupHeader="Online (on another platform)"
+                        FriendsCollection="{Binding OnlineAnotherPlatformFriendsCollection}"
+                        ShowFriendsList="True" />
+
+                <userControls:FriendsListUserControl
+                    GroupHeader="Offline"
+                    FriendsCollection="{Binding OfflineFriendsCollection}"
+                    ShowFriendsList="False" />
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>
