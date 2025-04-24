@@ -13,7 +13,7 @@ namespace VRCFriends.Business.Interfaces
 
         event Action ConfigurationChanged;
         event Action CurrentViewModelChanged;
-        event Action<bool> UsernamePasswordAccepted;
+        event Action<bool, bool> UsernamePasswordAccepted;
         event Action UserOtpVerified;
         event Action AppStarted;
         event Action UserRequiresLogin;
@@ -27,7 +27,7 @@ namespace VRCFriends.Business.Interfaces
         void OnCurrentViewModelChanged(IViewModel currentViewModel);
         void OnFriendsListUpdated(IList<LimitedUserDto> friendsList);
         void OnShowFriendsContextMenuItemClicked();
-        void OnUsernamePasswordAccepted(bool requiresEmailOtp);
+        void OnUsernamePasswordAccepted(bool requiresTwoFactorAuth, bool requiresEmailOtp);
         void OnUserOtpVerified();
         void OnUserRequiresLogin();
     }

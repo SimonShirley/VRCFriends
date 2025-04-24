@@ -22,7 +22,7 @@ namespace VRCFriends.Mediators
 
         public event Action? UserRequiresLogin;
 
-        public event Action<bool>? UsernamePasswordAccepted;
+        public event Action<bool, bool>? UsernamePasswordAccepted;
 
         public event Action? UserOtpVerified;
 
@@ -57,14 +57,25 @@ namespace VRCFriends.Mediators
             UserRequiresLogin?.Invoke();
         }
 
-        public void OnUsernamePasswordAccepted(bool requiresEmailOtp)
+        public void OnUsernamePasswordAccepted(bool requiresTwoFactorAuth, bool requiresEmailOtp)
         {
-            UsernamePasswordAccepted?.Invoke(requiresEmailOtp);
+            UsernamePasswordAccepted?.Invoke(requiresTwoFactorAuth, requiresEmailOtp);
         }
 
         public void OnUserOtpVerified()
         {
             _cookieStore.SaveAuthenticationCookies();
+
+            var configuration = new Configuration
+            {
+                Username = string.Empty,
+                Password = string.Empty,
+                UserAgent = GlobalConfiguration.Instance.UserAgent,
+                DefaultHeaders = GlobalConfiguration.Instance.DefaultHeaders,
+            };
+
+            OnConfigurationChanged(configuration);
+
             UserOtpVerified?.Invoke();
         }
 

@@ -6,7 +6,8 @@ namespace VRCFriends.Business.Interfaces.Login
 {
     public interface ILoginModel
     {
-        bool RequiresEmailOtp { get; set; }
+        bool RequiresTwoFactorAuth { get; }
+        bool RequiresEmailOtp { get; }
 
         CurrentUser GetCurrentUser();
         Task<CurrentUser> GetCurrentUserAsync();

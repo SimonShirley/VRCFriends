@@ -14,7 +14,8 @@ namespace VRCFriends.Business.Models
         private readonly IStateMediator _stateMediator;  
         private readonly IAuthenticationApi _authenticationApi;
 
-        public bool RequiresEmailOtp { get; set; }
+        public bool RequiresTwoFactorAuth { get; private set; }
+        public bool RequiresEmailOtp { get; private set; }
 
         public LoginModel(IStateMediator stateMediator, IAuthenticationApi authenticationApi)
         {
@@ -34,7 +35,11 @@ namespace VRCFriends.Business.Models
 
             // Our first request we get the ApiResponse instead of just the user object,
             // so we can see what the API expects from us
-            ApiResponse<CurrentUser> currentUserResponse = await _authenticationApi.GetCurrentUserWithHttpInfoAsync().ConfigureAwait(false);            
+            ApiResponse<CurrentUser> currentUserResponse = await _authenticationApi.GetCurrentUserWithHttpInfoAsync().ConfigureAwait(false);
+
+            // Function that determines if the api expects TwoFactorAuth from an ApiResponse
+            // We can just use a super simple string.Contains() check
+            RequiresTwoFactorAuth = currentUserResponse.RawContent.Contains("requiresTwoFactorAuth");
 
             // Function that determines if the api expects email2FA from an ApiResponse
             // We can just use a super simple string.Contains() check
@@ -47,23 +52,38 @@ namespace VRCFriends.Business.Models
 
         public async Task<bool> ValidateOtpAsync(string otpCode, bool requiresEmailOtp)
         {
-            bool userVerified;
+            if (string.IsNullOrWhiteSpace(otpCode))
+                return false;
 
-            if (requiresEmailOtp)
+            otpCode = otpCode.Trim();
+
+            if (otpCode.Length != 6 && otpCode.Length != 9)
+                return false;
+
+            if (otpCode.Length == 6)
             {
-                // If the API wants us to send an Email OTP code
-                var response = await _authenticationApi.Verify2FAEmailCodeAsync(new TwoFactorEmailCode(otpCode));
-                userVerified = response.Verified;
-            }
-            else
-            {
-                // requiresEmail2FA returned false, so we use secret-based 2fa verification
-                // authApi.VerifyRecoveryCode(new TwoFactorAuthCode("12345678")); // To Use a Recovery Code
-                var response = await _authenticationApi.Verify2FAAsync(new TwoFactorAuthCode(otpCode));
-                userVerified = response.Verified;
+                if (requiresEmailOtp)
+                {
+                    // If the API wants us to send an Email OTP code
+                    var response = await _authenticationApi.Verify2FAEmailCodeAsync(new TwoFactorEmailCode(otpCode));
+                    return response.Verified;
+                }
+                else
+                {
+                    // requiresEmail2FA returned false, so we use secret-based 2fa verification
+                    // authApi.VerifyRecoveryCode(new TwoFactorAuthCode("12345678")); // To Use a Recovery Code
+                    var response = await _authenticationApi.Verify2FAAsync(new TwoFactorAuthCode(otpCode));
+                    return response.Verified;
+                }
             }
 
-            return userVerified;
+            if (otpCode.Length == 9)
+            {
+                var response = await _authenticationApi.VerifyRecoveryCodeAsync(new TwoFactorAuthCode(otpCode));
+                return response.Verified;
+            }
+
+            return false;
         }
 
         public bool ValidateOtp(string otpCode, bool requiresEmailOtp) => ValidateOtpAsync(otpCode, requiresEmailOtp).Result;

@@ -55,9 +55,10 @@ namespace VRCFriends.Services
             GetViewModel<ILoginUsernamePasswordViewModel>();
         }
 
-        private void StateMediator_UsernamePasswordAccepted(bool requiresEmailOtp)
+        private void StateMediator_UsernamePasswordAccepted(bool requiresTwoFactorAuth, bool requiresEmailOtp)
         {
-            GetViewModel<ILoginOtpViewModel>();
+            if (requiresTwoFactorAuth)
+                GetViewModel<ILoginOtpViewModel>();
         }
 
         private void StateMediator_UserOtpVerified()

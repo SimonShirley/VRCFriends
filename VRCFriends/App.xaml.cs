@@ -42,7 +42,7 @@ namespace VRCFriends
             if (_serviceProvider is null)
                 Shutdown(1);
 
-            GlobalConfiguration.Instance = Configuration.MergeConfigurations(GlobalConfiguration.Instance, new Configuration { UserAgent = "VRCFriends/1.1.0 email_at_simonshirley.uk" });
+            GlobalConfiguration.Instance = Configuration.MergeConfigurations(GlobalConfiguration.Instance, new Configuration { UserAgent = "VRCFriends/1.1.1 email_at_simonshirley.uk" });
 
             var authenticationCookieStore = _serviceProvider!.GetRequiredService<IAuthenticationCookieStore>();
             authenticationCookieStore.LoadAuthenticationCookies(GlobalConfiguration.Instance);
@@ -54,11 +54,12 @@ namespace VRCFriends
 
             _stateMediator = _serviceProvider!.GetRequiredService<IStateMediator>();
             _stateMediator.AppExited += StateMediator_AppExited;
-            _stateMediator.OnAppStarted();
-
-            mainWindowViewModel.ShowWindow();
 
             _ = _serviceProvider!.GetRequiredService<INotifyIconForm>();
+
+            _stateMediator.OnAppStarted();
+
+            mainWindowViewModel.ShowWindow();            
         }
 
         private void StateMediator_AppExited() => Shutdown(0);

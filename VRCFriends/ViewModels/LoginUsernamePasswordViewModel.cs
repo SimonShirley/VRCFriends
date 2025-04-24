@@ -38,15 +38,21 @@ namespace VRCFriends.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(UsernamePasswordLoginCanExecute))]
-        public void LoginUser()
+        public async Task LoginUserAsync()
         {
             try
             {
                 ErrorMessage = string.Empty;
 
-                _loginModel.LoginUserAsync(VrcUsername ?? string.Empty, VrcPassword);
+                if (await _loginModel.LoginUserAsync(VrcUsername ?? string.Empty, VrcPassword))
+                {
+                    _stateMediator.OnUsernamePasswordAccepted(_loginModel.RequiresTwoFactorAuth, _loginModel.RequiresEmailOtp);
 
-                _stateMediator.OnUsernamePasswordAccepted(_loginModel.RequiresEmailOtp);
+                    if (!_loginModel.RequiresTwoFactorAuth)
+                        _stateMediator.OnUserOtpVerified();
+                }
+                else
+                    ErrorMessage = "Unable to login.";
             }
             catch (ApiException apiEx)
             {
@@ -68,6 +74,8 @@ namespace VRCFriends.ViewModels
                 Debug.WriteLine("Exception when calling API: {0}", ex.Message);
                 Debug.WriteLine(ex.ToString());
             }
-        }        
+        }
+
+        void ILoginUsernamePasswordViewModel.LoginUser() => LoginUserAsync().RunSynchronously();
     }
 }
