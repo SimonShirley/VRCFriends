@@ -1,4 +1,5 @@
-﻿using VRCFriends.Business.Interfaces;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using VRCFriends.Business.Interfaces;
 using VRCFriends.Business.Interfaces.Friends;
 using VRCFriends.Business.Models;
 using Timer = System.Threading.Timer;
@@ -9,7 +10,10 @@ namespace VRCFriends.ViewModels
     {
         private readonly IFriendsModel? _friendsModel;
         private readonly IStateMediator _stateMediator;
-        private readonly Timer? _timer;
+        private Timer? _timer;
+
+        [ObservableProperty]
+        private bool _showRefreshProgressBar;
 
         public string LastRefresh => (_friendsModel?.LastRefresh.ToLocalTime() ?? DateTime.MinValue).ToString("MMMM dd, yyyy HH:mm");
 
@@ -23,11 +27,27 @@ namespace VRCFriends.ViewModels
         {
             _stateMediator = stateMediator;
             _stateMediator.FriendsListUpdated += StateMediator_FriendsListUpdated;
+            _stateMediator.UserOtpVerified += StateMediator_UserOtpVerified;
 
             _friendsModel = friendsModel;
+        }
 
-            if (friendsModel is not null)
-                _timer = new Timer(new TimerCallback((state) => _friendsModel?.RefreshFriendsListAsync()), null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
+        private void StateMediator_UserOtpVerified()
+        {
+            if (_friendsModel is not null && _timer is null)
+                _timer = new Timer(new TimerCallback(Timer_TimerCallback), null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
+        }
+
+        private async void Timer_TimerCallback(object? state)
+        {
+            if (_friendsModel is not null)
+            {
+                ShowRefreshProgressBar = true;
+
+                await _friendsModel.RefreshFriendsListAsync();
+
+                ShowRefreshProgressBar = false;
+            }
         }
 
         private void StateMediator_FriendsListUpdated()
@@ -51,6 +71,9 @@ namespace VRCFriends.ViewModels
             GC.SuppressFinalize(this);
 
             _timer?.Dispose();
+
+            _stateMediator.FriendsListUpdated -= StateMediator_FriendsListUpdated;
+            _stateMediator.UserOtpVerified -= StateMediator_UserOtpVerified;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace VRCFriends.Services
         private const string _storeFileName = "vrcfriends_data";
         private const string _storeFileNameExtension = ".json";
 
-        private readonly Lock _lockObject = new() { };
+        private readonly Lock _lockObject = new();
 
         public AuthenticationCookieStore(string? storePath = "")
         {

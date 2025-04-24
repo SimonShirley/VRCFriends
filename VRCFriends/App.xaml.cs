@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using VRCFriends.Business.Interfaces;
 using VRCFriends.Services;
@@ -43,9 +42,7 @@ namespace VRCFriends
             if (_serviceProvider is null)
                 Shutdown(1);
 
-            _ = _serviceProvider!.GetRequiredService<INotifyIconForm>();
-
-            GlobalConfiguration.Instance = Configuration.MergeConfigurations(GlobalConfiguration.Instance, new Configuration { UserAgent = "VRCFriends/0.0.1 email_at_simonshirley.uk" });
+            GlobalConfiguration.Instance = Configuration.MergeConfigurations(GlobalConfiguration.Instance, new Configuration { UserAgent = "VRCFriends/1.1.0 email_at_simonshirley.uk" });
 
             var authenticationCookieStore = _serviceProvider!.GetRequiredService<IAuthenticationCookieStore>();
             authenticationCookieStore.LoadAuthenticationCookies(GlobalConfiguration.Instance);
@@ -60,6 +57,8 @@ namespace VRCFriends
             _stateMediator.OnAppStarted();
 
             mainWindowViewModel.ShowWindow();
+
+            _ = _serviceProvider!.GetRequiredService<INotifyIconForm>();
         }
 
         private void StateMediator_AppExited() => Shutdown(0);

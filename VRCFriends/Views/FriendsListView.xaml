@@ -7,7 +7,7 @@
              xmlns:viewmodels="clr-namespace:VRCFriends.ViewModels"
              xmlns:converters="clr-namespace:VRCFriends.Converters"
              xmlns:apiModel="clr-namespace:VRChat.API.Model;assembly=VRChat.API"
-             xmlns:userControls="clr-namespace:VRCFriends.UserControls"
+             xmlns:userControls="clr-namespace:VRCFriends.UserControls" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:Background="White"
@@ -35,27 +35,42 @@
                 />
         </StackPanel>
 
-        <ScrollViewer
-            HorizontalScrollBarVisibility="Disabled"
-            VerticalScrollBarVisibility="Auto"
-            Padding="20">
-            
-            <StackPanel>
-                <userControls:FriendsListUserControl
-                    GroupHeader="Online"
-                    FriendsCollection="{Binding OnlineFriendsCollection}"
-                    ShowFriendsList="True" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
 
-                <userControls:FriendsListUserControl
+            <ScrollViewer
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto"
+                Padding="20">
+
+                <StackPanel Grid.Column="0">
+                    <userControls:FriendsListUserControl
+                        GroupHeader="Online"
+                        FriendsCollection="{Binding OnlineFriendsCollection}"
+                        ShowFriendsList="True"
+                        Panel.ZIndex="2" />
+
+                    <userControls:FriendsListUserControl
                         GroupHeader="Online (on another platform)"
                         FriendsCollection="{Binding OnlineAnotherPlatformFriendsCollection}"
-                        ShowFriendsList="True" />
+                        ShowFriendsList="True"
+                        Panel.ZIndex="2"/>
 
-                <userControls:FriendsListUserControl
-                    GroupHeader="Offline"
-                    FriendsCollection="{Binding OfflineFriendsCollection}"
-                    ShowFriendsList="False" />
-            </StackPanel>
-        </ScrollViewer>
+                    <userControls:FriendsListUserControl
+                        GroupHeader="Offline"
+                        FriendsCollection="{Binding OfflineFriendsCollection}"
+                        ShowFriendsList="False"
+                        Panel.ZIndex="2" />
+                </StackPanel>
+            </ScrollViewer>
+            
+            <xctk:BusyIndicator
+                IsBusy="{Binding ShowRefreshProgressBar}"
+                BusyContent="Refreshing Friends List"
+                Panel.ZIndex="1"
+                Grid.Column="0"/>
+        </Grid>
     </DockPanel>
 </UserControl>

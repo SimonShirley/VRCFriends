@@ -30,6 +30,8 @@ namespace VRCFriends.Business.Models
 
             _stateMediator.OnConfigurationChanged(configuration);
 
+            _authenticationApi.Configuration = Configuration.MergeConfigurations(GlobalConfiguration.Instance, configuration);
+
             // Our first request we get the ApiResponse instead of just the user object,
             // so we can see what the API expects from us
             ApiResponse<CurrentUser> currentUserResponse = await _authenticationApi.GetCurrentUserWithHttpInfoAsync().ConfigureAwait(false);            
@@ -60,9 +62,6 @@ namespace VRCFriends.Business.Models
                 var response = await _authenticationApi.Verify2FAAsync(new TwoFactorAuthCode(otpCode));
                 userVerified = response.Verified;
             }
-
-            if (userVerified)
-                _stateMediator.OnUserOtpVerified();
 
             return userVerified;
         }

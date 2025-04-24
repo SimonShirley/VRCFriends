@@ -9,8 +9,7 @@
              xmlns:models="clr-namespace:VRCFriends.Business.Models;assembly=VRCFriends.Business"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="400"
-             d:Background="White"
-             d:DataContext="{d:DesignInstance Type=viewmodels:FriendsListControlViewModel}">
+             d:Background="White">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -34,15 +33,12 @@
                     <GradientStop Color="#FF61C7C3" Offset="1"/>
                 </LinearGradientBrush>
             </Button.Background>
-            <TextBlock
-                x:Name="txtGroupHeader"
-                Text="{Binding GroupHeader}"/>
+            <TextBlock x:Name="txtGroupHeader" />
         </Button>
 
         <ListView
             x:Name="listViewFriendsCollection"
             d:Height="200" 
-            ItemsSource="{Binding FriendsCollection}"
             ItemTemplate="{DynamicResource FriendListItem}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             Background="Transparent"

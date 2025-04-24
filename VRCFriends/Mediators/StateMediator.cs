@@ -16,7 +16,7 @@ namespace VRCFriends.Mediators
 
         public string? AppDataPath { get => _appDataPath; }
 
-        public event Action<IReadableConfiguration>? ConfigurationChanged;
+        public event Action? ConfigurationChanged;
 
         public event Action? CurrentViewModelChanged;
 
@@ -43,7 +43,7 @@ namespace VRCFriends.Mediators
         public void OnConfigurationChanged(IReadableConfiguration configuration)
         {
             GlobalConfiguration.Instance = Configuration.MergeConfigurations(GlobalConfiguration.Instance, configuration);
-            ConfigurationChanged?.Invoke(configuration);
+            ConfigurationChanged?.Invoke();
         }
 
         public void OnCurrentViewModelChanged(IViewModel? currentViewModel)
@@ -96,11 +96,6 @@ namespace VRCFriends.Mediators
         public void OnShowFriendsContextMenuItemClicked()
         {
             ShowFriendsContextMenuItemClicked?.Invoke();
-        }
-
-        public void OnFriendsListUpdated(IList<object> friendsList)
-        {
-            throw new NotImplementedException();
         }
     }
 }

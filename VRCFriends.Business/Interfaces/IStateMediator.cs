@@ -11,7 +11,7 @@ namespace VRCFriends.Business.Interfaces
         IDictionary<string, LimitedUserDto> FriendsDictionary { get; }
         string AppDataPath { get; }
 
-        event Action<IReadableConfiguration> ConfigurationChanged;
+        event Action ConfigurationChanged;
         event Action CurrentViewModelChanged;
         event Action<bool> UsernamePasswordAccepted;
         event Action UserOtpVerified;

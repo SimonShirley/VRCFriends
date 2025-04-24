@@ -8,6 +8,7 @@ using VRCFriends.Business.Models;
 using VRCFriends.NotifyIcon;
 using VRCFriends.ViewModels;
 using VRCFriends.Views;
+using VRCFriends.Business.Factories;
 
 namespace VRCFriends.Services
 {
@@ -20,12 +21,14 @@ namespace VRCFriends.Services
             services.AddSingleton<IViewModelNavigationService, ViewModelNavigationService>();
             services.AddSingleton<IAuthenticationCookieStore, AuthenticationCookieStore>();
 
-            services.AddTransient<ILoginModel, LoginModel>();
-            services.AddTransient<IFriendsModel, FriendsModel>();
+            services.AddSingleton<ILoginModel, LoginModel>();
+            services.AddSingleton<IFriendsModel, FriendsModel>();
 
             services.AddSingleton<IStateMediator, StateMediator>();           
             
             services.AddTransient<IViewModelGeneratorFactory, ViewModelGeneratorFactory>();
+            services.AddTransient<IInstanceDtoFactory, InstanceDtoFactory>();
+            services.AddTransient<ILimitedUserDtoFactory, LimitedUserDtoFactory>();
 
             services.AddSingleton<IMainWindowViewModel, MainWindowViewModel>();
 

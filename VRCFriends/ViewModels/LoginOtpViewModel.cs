@@ -37,7 +37,8 @@ namespace VRCFriends.ViewModels
         {
             try
             {
-                bool loginVerified = await _loginModel.ValidateOtpAsync(otpCode, _loginModel.RequiresEmailOtp).ConfigureAwait(false);
+                // await needs to run on captured context [ ConfigureAwait(true) ] because of file locking
+                bool loginVerified = await _loginModel.ValidateOtpAsync(otpCode, _loginModel.RequiresEmailOtp).ConfigureAwait(true);
 
                 if (loginVerified)
                 {
@@ -57,6 +58,9 @@ namespace VRCFriends.ViewModels
             catch (ApiException apiEx)
             {
                 ErrorMessage = apiEx.Message;
+
+                if (apiEx.ErrorCode == 401)
+                    ErrorMessage = "Incorrect One Time Passcode";
 
                 // Catch any exceptions write to console, helps w debugging :D
                 Debug.WriteLine("Exception when calling API: {0}", apiEx.Message);

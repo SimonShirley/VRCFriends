@@ -1,8 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using System.Collections;
 using System.Windows;
 using System.Windows.Input;
-using UserControl = System.Windows.Controls.UserControl;
 using Control = System.Windows.Controls.Control;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace VRCFriends.UserControls
 {
@@ -23,7 +24,7 @@ namespace VRCFriends.UserControls
         public static readonly DependencyProperty FriendsCollectionProperty =
             DependencyProperty.RegisterAttached(
                 "FriendsCollection",
-                typeof(IEnumerable<object>),
+                typeof(IEnumerable),
                 typeof(FriendsListUserControl),
                 new PropertyMetadata(null, new PropertyChangedCallback(OnFriendsCollectionPropertyChanged)));
 
@@ -38,9 +39,9 @@ namespace VRCFriends.UserControls
 
         public static void SetGroupHeader(DependencyObject obj, string value) => obj.SetValue(GroupHeaderProperty, value);
 
-        public static IEnumerable<object>? GetFriendsCollection(DependencyObject obj) => obj.GetValue(FriendsCollectionProperty) as IEnumerable<object>;
+        public static IEnumerable? GetFriendsCollection(DependencyObject obj) => obj.GetValue(FriendsCollectionProperty) as IEnumerable;
 
-        public static void SetFriendsCollection(DependencyObject obj, IEnumerable<object>? value) => obj.SetValue(FriendsCollectionProperty, value);
+        public static void SetFriendsCollection(DependencyObject obj, IEnumerable? value) => obj.SetValue(FriendsCollectionProperty, value);
 
         public static bool GetShowFriendsList(DependencyObject obj) => (bool)obj.GetValue(ShowFriendsListProperty);
 
@@ -66,7 +67,7 @@ namespace VRCFriends.UserControls
         private static void OnFriendsCollectionPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is FriendsListUserControl userControl)
-                userControl.listViewFriendsCollection.ItemsSource = e.NewValue as IEnumerable<object>;
+                userControl.listViewFriendsCollection.ItemsSource = e.NewValue as IEnumerable;
         }
 
         private static void OnShowFriendsListPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
