@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using VRCFriends.Business.Interfaces;
 using VRCFriends.Business.Interfaces.Friends;
 using VRCFriends.Business.Models;
@@ -10,7 +11,19 @@ namespace VRCFriends.ViewModels
     {
         private readonly IFriendsModel? _friendsModel;
         private readonly IStateMediator _stateMediator;
-        private Timer? _timer;
+        private Timer? _automaticRefreshTimer;
+        private Timer? _manualRefreshTimer;
+        private bool _canRefreshFriendsListManually = false;
+
+        public bool CanManuallyRefreshFriendsList {
+            get => _canRefreshFriendsListManually;
+            private set
+            {
+                _canRefreshFriendsListManually = value;
+                OnPropertyChanged(nameof(CanManuallyRefreshFriendsList));
+                App.Current.Dispatcher.BeginInvoke(ManuallyRefreshFriendsListCommand.NotifyCanExecuteChanged);
+            }
+        }
 
         [ObservableProperty]
         private bool _showRefreshProgressBar;
@@ -34,21 +47,32 @@ namespace VRCFriends.ViewModels
 
         private void StateMediator_UserOtpVerified()
         {
-            if (_friendsModel is not null && _timer is null)
-                _timer = new Timer(new TimerCallback(Timer_TimerCallback), null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
+            if (_friendsModel is not null && _automaticRefreshTimer is null)
+            {
+                _automaticRefreshTimer?.Dispose();
+                _automaticRefreshTimer = new Timer(new TimerCallback(async (obj) => await RefreshFriendsList(obj)), null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
+
+                _manualRefreshTimer?.Dispose();
+                _manualRefreshTimer = new Timer(new TimerCallback((obj) => CanManuallyRefreshFriendsList = true), null, TimeSpan.FromMinutes(1), Timeout.InfiniteTimeSpan);
+            }
         }
 
-        private async void Timer_TimerCallback(object? state)
+        private async Task RefreshFriendsList(object? state)
         {
             if (_friendsModel is not null)
             {
+                CanManuallyRefreshFriendsList = false;
+
                 ShowRefreshProgressBar = true;
 
-                await _friendsModel.RefreshFriendsListAsync();
+                await _friendsModel.RefreshFriendsListAsync().ConfigureAwait(false);
 
                 ShowRefreshProgressBar = false;
+
+                _manualRefreshTimer?.Change(TimeSpan.FromMinutes(1), Timeout.InfiniteTimeSpan);
+                _automaticRefreshTimer?.Change(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
             }
-        }
+        }  
 
         private void StateMediator_FriendsListUpdated()
         {
@@ -66,11 +90,15 @@ namespace VRCFriends.ViewModels
                 .OrderBy(friend => friend.DisplayName);
         }
 
+        [RelayCommand(CanExecute = nameof(CanManuallyRefreshFriendsList))]
+        private async Task ManuallyRefreshFriendsList() => await RefreshFriendsList(null);
+
         public void Dispose()
         {
             GC.SuppressFinalize(this);
 
-            _timer?.Dispose();
+            _manualRefreshTimer?.Dispose();
+            _automaticRefreshTimer?.Dispose();
 
             _stateMediator.FriendsListUpdated -= StateMediator_FriendsListUpdated;
             _stateMediator.UserOtpVerified -= StateMediator_UserOtpVerified;

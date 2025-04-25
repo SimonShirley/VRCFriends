@@ -81,6 +81,6 @@ namespace VRCFriends.Business.Models
             _stateMediator.ConfigurationChanged -= StateMediator_ConfigurationChanged;
         }
 
-        public void RefreshFriendsList() => RefreshFriendsListAsync().RunSynchronously();
+        public void RefreshFriendsList() => Task.Run(() => RefreshFriendsListAsync());
     }
 }

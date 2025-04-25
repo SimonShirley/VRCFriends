@@ -13,26 +13,32 @@
              d:Background="White"
              d:DataContext="{d:DesignInstance Type=viewmodels:FriendsListViewModel}">
 
-    <DockPanel
-        Margin="10"
-        LastChildFill="True">
+    <DockPanel LastChildFill="True">
 
         <StackPanel
             Orientation="Horizontal"
-            DockPanel.Dock="Bottom">
+            DockPanel.Dock="Bottom"
+            Margin="10">
             
             <TextBlock
                 Text="Last Updated:"
                 d:Text="Last refreshed"
-                Padding="0 10 0 0"
-                VerticalAlignment="Bottom"
-                />
+                VerticalAlignment="Bottom" />
+            
             <TextBlock
                 Text="{Binding LastRefresh}"
                 d:Text="01 January 2025 00:35"
                 Margin="10 0 0 0"
-                VerticalAlignment="Bottom"
-                />
+                VerticalAlignment="Bottom" />
+
+            <Button
+                Content="Refresh"
+                Margin="10 0 0 0"
+                Padding="5 0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Command="{Binding ManuallyRefreshFriendsListCommand}"/>
+
         </StackPanel>
 
         <Grid>
@@ -43,9 +49,10 @@
             <ScrollViewer
                 HorizontalScrollBarVisibility="Disabled"
                 VerticalScrollBarVisibility="Auto"
-                Padding="20">
+                Padding="20 20 20 0"
+                Grid.Column="0">
 
-                <StackPanel Grid.Column="0">
+                <StackPanel>
                     <userControls:FriendsListUserControl
                         GroupHeader="Online"
                         FriendsCollection="{Binding OnlineFriendsCollection}"
@@ -62,7 +69,7 @@
                         GroupHeader="Offline"
                         FriendsCollection="{Binding OfflineFriendsCollection}"
                         ShowFriendsList="False"
-                        Panel.ZIndex="2" />
+                        Panel.ZIndex="2"/>
                 </StackPanel>
             </ScrollViewer>
             
