@@ -26,6 +26,7 @@
             FontSize="16"
             Margin="0"
             Padding="5"
+            HorizontalAlignment="Stretch"
             HorizontalContentAlignment="Left">
             <TextBlock x:Name="txtGroupHeader" />
         </Button>
