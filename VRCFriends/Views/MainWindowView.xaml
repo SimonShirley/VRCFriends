@@ -10,18 +10,24 @@
         d:Background="White"
         d:Height="450" d:Width="800"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
-        Title="VRCFriends - A VRChat Friends List App" Height="450" Width="800"      
-        Background="AliceBlue">
+        Title="VRCFriends - A VRChat Friends List App" Height="450" Width="800"
+        ThemeMode="System">
     <Window.Resources>
-        <DataTemplate DataType="{x:Type vm:LoginUsernamePasswordViewModel}">
-            <vw:LoginUsernamePasswordView />
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:LoginOtpViewModel}">
-            <vw:LoginOtpView />
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:FriendsListViewModel}">
-            <vw:FriendsListView />
-        </DataTemplate>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+            <DataTemplate DataType="{x:Type vm:LoginUsernamePasswordViewModel}">
+                <vw:LoginUsernamePasswordView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:LoginOtpViewModel}">
+                <vw:LoginOtpView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:FriendsListViewModel}">
+                <vw:FriendsListView />
+            </DataTemplate>
+        </ResourceDictionary>
     </Window.Resources>
     <ContentControl Content="{Binding CurrentViewModel}" />
 </Window>

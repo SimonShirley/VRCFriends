@@ -27,12 +27,6 @@
             Margin="0"
             Padding="5"
             HorizontalContentAlignment="Left">
-            <Button.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="#FFE1FBFE"/>
-                    <GradientStop Color="#FF61C7C3" Offset="1"/>
-                </LinearGradientBrush>
-            </Button.Background>
             <TextBlock x:Name="txtGroupHeader" />
         </Button>
 
