@@ -35,34 +35,20 @@ namespace VRCFriends.Business.Models
 
         public async Task RefreshFriendsListAsync()
         {
-            try
-            {
-                var offlineFriends = await GetFriendsListAsync(false);
-                var onlineFriends = await GetFriendsListAsync(true);
+            var offlineFriends = await GetFriendsListAsync(false);
+            var onlineFriends = await GetFriendsListAsync(true);
 
-                LastRefresh = DateTime.Now;
+            LastRefresh = DateTime.Now;
 
-                _stateMediator.OnFriendsListUpdated(offlineFriends.Union(onlineFriends).ToList());
-            }
-            catch (ApiException apiEx)
-            {
-                Debug.WriteLine(apiEx.Message);
-                Debug.WriteLine(apiEx.ErrorCode);
-                Debug.WriteLine(apiEx.ErrorContent);
-            }
-
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
+            _stateMediator.OnFriendsListUpdated(offlineFriends.Union(onlineFriends).ToList());
         }
 
         private async Task<IList<LimitedUserDto>> GetFriendsListAsync(bool offline)
         {
-            var friendDtoList = new List<LimitedUserDto>();
+            IList<LimitedUserDto> friendDtoList = new List<LimitedUserDto>();
 
-            var friendsList = _friendsApi.GetFriends(offline: offline);
-
+            IList<LimitedUser> friendsList = _friendsApi.GetFriends(offline: offline) ?? throw new Exception("Unable to connect to VRChat.");
+            
             foreach (LimitedUser friend in friendsList)
                 friendDtoList.Add(await ConvertApiLimitedUserToDtoUserAsync(friend));
 

@@ -1,4 +1,5 @@
-﻿using System.Security;
+﻿using System;
+using System.Security;
 using System.Threading.Tasks;
 using VRCFriends.Business.Interfaces;
 using VRCFriends.Business.Interfaces.Login;
@@ -37,6 +38,9 @@ namespace VRCFriends.Business.Models
             // so we can see what the API expects from us
             ApiResponse<CurrentUser> currentUserResponse = await _authenticationApi.GetCurrentUserWithHttpInfoAsync().ConfigureAwait(false);
 
+            if (currentUserResponse.RawContent is null)
+                throw new Exception("Unable to connect to VRChat.");
+
             // Function that determines if the api expects TwoFactorAuth from an ApiResponse
             // We can just use a super simple string.Contains() check
             RequiresTwoFactorAuth = currentUserResponse.RawContent.Contains("requiresTwoFactorAuth");
@@ -45,12 +49,12 @@ namespace VRCFriends.Business.Models
             // We can just use a super simple string.Contains() check
             RequiresEmailOtp = currentUserResponse.RawContent.Contains("emailOtp");
 
-            return currentUserResponse.Data != null;
+            return RequiresTwoFactorAuth || currentUserResponse.Data != null;
         }
 
         public bool LoginUser(string username, SecureString password) => LoginUserAsync(username, password).Result;
 
-        public async Task<bool> ValidateOtpAsync(string otpCode, bool requiresEmailOtp)
+        public async ValueTask<bool> ValidateOtpAsync(string otpCode, bool requiresEmailOtp)
         {
             if (string.IsNullOrWhiteSpace(otpCode))
                 return false;
@@ -73,14 +77,15 @@ namespace VRCFriends.Business.Models
                     // requiresEmail2FA returned false, so we use secret-based 2fa verification
                     // authApi.VerifyRecoveryCode(new TwoFactorAuthCode("12345678")); // To Use a Recovery Code
                     var response = await _authenticationApi.Verify2FAAsync(new TwoFactorAuthCode(otpCode));
-                    return response.Verified;
+
+                    return response is null ? throw new Exception("Unable to connect to VRChat.") : response.Verified;
                 }
             }
 
             if (otpCode.Length == 9)
             {
                 var response = await _authenticationApi.VerifyRecoveryCodeAsync(new TwoFactorAuthCode(otpCode));
-                return response.Verified;
+                return response is null ? throw new Exception("Unable to connect to VRChat.") : response.Verified;
             }
 
             return false;

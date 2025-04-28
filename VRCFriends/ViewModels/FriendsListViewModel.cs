@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Diagnostics;
 using VRCFriends.Business.Interfaces;
 using VRCFriends.Business.Interfaces.Friends;
 using VRCFriends.Business.Models;
+using VRChat.API.Client;
 using Timer = System.Threading.Timer;
 
 namespace VRCFriends.ViewModels
@@ -27,6 +29,9 @@ namespace VRCFriends.ViewModels
 
         [ObservableProperty]
         private bool _showRefreshProgressBar;
+
+        [ObservableProperty]
+        private string _statusMessage = "";
 
         public string LastRefresh => (_friendsModel?.LastRefresh.ToLocalTime() ?? DateTime.MinValue).ToString("MMMM dd, yyyy HH:mm");
 
@@ -57,20 +62,40 @@ namespace VRCFriends.ViewModels
             }
         }
 
-        private async Task RefreshFriendsList(object? state)
+        private async ValueTask RefreshFriendsList(object? state)
         {
-            if (_friendsModel is not null)
+            try
             {
+                StatusMessage = string.Empty;
                 CanManuallyRefreshFriendsList = false;
 
-                ShowRefreshProgressBar = true;
+                if (_friendsModel is not null)
+                {
+                    ShowRefreshProgressBar = true;
 
-                await _friendsModel.RefreshFriendsListAsync().ConfigureAwait(false);
+                    await _friendsModel.RefreshFriendsListAsync().ConfigureAwait(false);
 
-                ShowRefreshProgressBar = false;
+                    ShowRefreshProgressBar = false;
 
-                _manualRefreshTimer?.Change(TimeSpan.FromMinutes(1), Timeout.InfiniteTimeSpan);
-                _automaticRefreshTimer?.Change(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
+                    _manualRefreshTimer?.Change(TimeSpan.FromMinutes(1), Timeout.InfiniteTimeSpan);
+                    _automaticRefreshTimer?.Change(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
+                }
+                else
+                    StatusMessage = "An error occured.";
+            }
+            catch (ApiException apiEx)
+            {
+                StatusMessage = apiEx.Message;
+
+                Debug.WriteLine(apiEx.Message);
+                Debug.WriteLine(apiEx.ErrorCode);
+                Debug.WriteLine(apiEx.ErrorContent);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = ex.Message;
+
+                Debug.WriteLine(ex.Message);
             }
         }  
 

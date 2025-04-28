@@ -25,7 +25,7 @@ namespace VRCFriends.Services
             _stateMediator.UserOtpVerified += StateMediator_UserOtpVerified;
         }
 
-        private void StateMediator_AppStarted()
+        private async void StateMediator_AppStarted()
         {
             // create MainWindowViewModel
             // set StateMediator to current viewmodel
@@ -33,21 +33,24 @@ namespace VRCFriends.Services
 
             try
             {
-                var currentUser = _authenticationApi.GetCurrentUser();
+                var authTokenValid = await _authenticationApi.VerifyAuthTokenAsync();
 
                 // if we can get the current user without an error,
                 // we must be validated
-                _stateMediator.OnUserOtpVerified();
+                if (authTokenValid is not null && authTokenValid.Ok)
+                {
+                    _stateMediator.OnUserOtpVerified();
+                    return;
+                }
             }
             catch (ApiException apiEx)
             {
                 Debug.WriteLine(apiEx.Message);
                 Debug.WriteLine(apiEx.ErrorCode);
                 Debug.WriteLine(apiEx.ErrorContent);
-
-                if (apiEx.ErrorCode == 401)
-                    _stateMediator.OnUserRequiresLogin();
             }
+
+            _stateMediator.OnUserRequiresLogin();
         }
 
         private void StateMediator_LoginRequired()

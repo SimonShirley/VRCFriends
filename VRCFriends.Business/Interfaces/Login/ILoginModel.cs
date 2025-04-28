@@ -14,6 +14,6 @@ namespace VRCFriends.Business.Interfaces.Login
         bool LoginUser(string username, SecureString password);
         Task<bool> LoginUserAsync(string username, SecureString password);
         bool ValidateOtp(string totpCode, bool requiresEmailTotp);
-        Task<bool> ValidateOtpAsync(string totpCode, bool requiresEmailTotp);
+        ValueTask<bool> ValidateOtpAsync(string otpCode, bool requiresEmailOtp);
     }
 }

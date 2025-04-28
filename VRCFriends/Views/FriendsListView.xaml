@@ -22,14 +22,12 @@
             
             <TextBlock
                 Text="Last Updated:"
-                d:Text="Last refreshed"
-                VerticalAlignment="Bottom" />
+                d:Text="Last refreshed" />
             
             <TextBlock
                 Text="{Binding LastRefresh}"
                 d:Text="01 January 2025 00:35"
-                Margin="10 0 0 0"
-                VerticalAlignment="Bottom" />
+                Margin="10 0 0 0" />
 
             <Button
                 Content="Refresh"
@@ -38,6 +36,11 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Command="{Binding ManuallyRefreshFriendsListCommand}"/>
+
+            <TextBlock
+                Text="{Binding StatusMessage}"
+                d:Text="This is a status message"
+                Margin="10 0 0 0"/>
 
         </StackPanel>
 
