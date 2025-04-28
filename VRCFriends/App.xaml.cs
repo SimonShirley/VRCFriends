@@ -42,7 +42,7 @@ namespace VRCFriends
             if (_serviceProvider is null)
                 Shutdown(1);
 
-            GlobalConfiguration.Instance = Configuration.MergeConfigurations(GlobalConfiguration.Instance, new Configuration { UserAgent = "VRCFriends/1.1.2 email_at_simonshirley.uk" });
+            GlobalConfiguration.Instance = Configuration.MergeConfigurations(GlobalConfiguration.Instance, new Configuration { UserAgent = "VRCFriends/1.1.3 email_at_simonshirley.uk" });
 
             var authenticationCookieStore = _serviceProvider!.GetRequiredService<IAuthenticationCookieStore>();
             authenticationCookieStore.LoadAuthenticationCookies(GlobalConfiguration.Instance);
