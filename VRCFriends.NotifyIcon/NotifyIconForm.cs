@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using VRCFriends.Business.Interfaces;
 using VRCFriends.Business.Interfaces.Friends;
@@ -29,7 +30,7 @@ namespace VRCFriends.NotifyIcon
             _menu.Items.AddRange(new[] { _friendsMenuItem, _exitMenuItem });
 
             notifyIcon.ContextMenuStrip = _menu;
-            notifyIcon.Icon = new Icon("Assets\\vrchat.ico");
+            notifyIcon.Icon = new Icon(Path.Combine(AppContext.BaseDirectory, "Assets", "vrchat.ico"));
             notifyIcon.DoubleClick += ShowFriendsMenuItem_Click;
 
             _friendsMenuItem.Click += ShowFriendsMenuItem_Click;
