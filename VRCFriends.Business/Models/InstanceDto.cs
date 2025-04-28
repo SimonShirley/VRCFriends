@@ -49,12 +49,39 @@ namespace VRCFriends.Business.Models
                 if (WorldName == "In a Private World")
                     return string.Empty;
 
-                return $"Instance Type: {InstanceType}";
+                return $"Instance Type: {GetInstanceTypeString(InstanceType)}";
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private string GetInstanceTypeString(InstanceType? instanceType)
+        {
+            if (instanceType is null)
+                return string.Empty;
+
+            switch(instanceType)
+            {
+                case VRChat.API.Model.InstanceType.Public:
+                    return "Public";
+
+                case VRChat.API.Model.InstanceType.Private:
+                    return "Private";
+
+                case VRChat.API.Model.InstanceType.Hidden:
+                    return "Friends+";
+
+                case VRChat.API.Model.InstanceType.Friends:
+                    return "Friends";
+
+                case VRChat.API.Model.InstanceType.Group:
+                    return "Group";
+
+                default:
+                    return string.Empty;
+            };
+        }
     }
 }
