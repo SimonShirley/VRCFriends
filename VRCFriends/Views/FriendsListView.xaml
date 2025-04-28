@@ -7,7 +7,7 @@
              xmlns:viewmodels="clr-namespace:VRCFriends.ViewModels"
              xmlns:converters="clr-namespace:VRCFriends.Converters"
              xmlns:apiModel="clr-namespace:VRChat.API.Model;assembly=VRChat.API"
-             xmlns:userControls="clr-namespace:VRCFriends.UserControls" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:userControls="clr-namespace:VRCFriends.UserControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:Background="White"
@@ -76,9 +76,9 @@
                 </StackPanel>
             </ScrollViewer>
             
-            <xctk:BusyIndicator
+            <userControls:BusyIndicatorControl
                 IsBusy="{Binding ShowRefreshProgressBar}"
-                BusyContent="Refreshing Friends List"
+                MessageText="Refreshing Friends List"
                 Panel.ZIndex="1"
                 Grid.Column="0"/>
         </Grid>
