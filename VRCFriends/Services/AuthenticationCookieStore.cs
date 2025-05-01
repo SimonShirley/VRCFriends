@@ -60,8 +60,10 @@ namespace VRCFriends.Services
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Debug.WriteLine(ex.Message);
                     Debug.WriteLine(ex);
+#endif
                 }
                 finally
                 {
@@ -111,8 +113,10 @@ namespace VRCFriends.Services
                     if (File.Exists(tempFileName))
                         File.Delete(tempFileName);
 
+#if DEBUG
                     Debug.WriteLine(ex.Message);
                     Debug.WriteLine(ex);
+#endif
                 }
                 finally
                 {

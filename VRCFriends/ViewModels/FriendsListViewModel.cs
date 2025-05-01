@@ -87,15 +87,19 @@ namespace VRCFriends.ViewModels
             {
                 StatusMessage = apiEx.Message;
 
+#if DEBUG
                 Debug.WriteLine(apiEx.Message);
                 Debug.WriteLine(apiEx.ErrorCode);
                 Debug.WriteLine(apiEx.ErrorContent);
+#endif
             }
             catch (Exception ex)
             {
                 StatusMessage = ex.Message;
 
+#if DEBUG
                 Debug.WriteLine(ex.Message);
+#endif
             }
         }  
 

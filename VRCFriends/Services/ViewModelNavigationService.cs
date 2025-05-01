@@ -45,9 +45,11 @@ namespace VRCFriends.Services
             }
             catch (ApiException apiEx)
             {
+#if DEBUG
                 Debug.WriteLine(apiEx.Message);
                 Debug.WriteLine(apiEx.ErrorCode);
                 Debug.WriteLine(apiEx.ErrorContent);
+#endif
             }
 
             _stateMediator.OnUserRequiresLogin();

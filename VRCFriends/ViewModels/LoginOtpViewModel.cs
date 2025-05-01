@@ -45,14 +45,18 @@ namespace VRCFriends.ViewModels
                     OtpCode = string.Empty;
 
                     CurrentUser currentUser = await _loginModel.GetCurrentUserAsync();
+#if DEBUG
                     Debug.WriteLine("Logged in as {0}", currentUser.DisplayName);
+#endif
 
                     _stateMediator.OnUserOtpVerified();
                 }
                 else
                 {
                     ErrorMessage = "Login verification failed";
+#if DEBUG
                     Debug.WriteLine(ErrorMessage);
+#endif
                 }
             }
             catch (ApiException apiEx)
@@ -62,18 +66,22 @@ namespace VRCFriends.ViewModels
                 if (apiEx.ErrorCode == 401)
                     ErrorMessage = "Incorrect One Time Passcode";
 
+#if DEBUG
                 // Catch any exceptions write to console, helps w debugging :D
                 Debug.WriteLine("Exception when calling API: {0}", apiEx.Message);
                 Debug.WriteLine("Status Code: {0}", apiEx.ErrorCode);
                 Debug.WriteLine(apiEx.ToString());
+#endif
             }
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
 
+#if DEBUG
                 // Catch any exceptions write to console, helps w debugging :D
                 Debug.WriteLine("Exception when calling API: {0}", ex.Message);
                 Debug.WriteLine(ex.ToString());
+#endif
             }
         }
     }

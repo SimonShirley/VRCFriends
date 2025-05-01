@@ -93,8 +93,10 @@ namespace VRCFriends.Business.Factories
             }
             catch (Exception ex)
             {
+#if DEBUG
                 Debug.WriteLine(ex.Message);
                 Debug.WriteLine(ex);
+#endif
             }
             finally
             {

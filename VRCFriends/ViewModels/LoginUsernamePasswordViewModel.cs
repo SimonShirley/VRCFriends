@@ -61,18 +61,22 @@ namespace VRCFriends.ViewModels
                 if (apiEx.ErrorCode == 401)
                     ErrorMessage = "Invalid username or password.";
 
+#if DEBUG
                 // Catch any exceptions write to console, helps w debugging :D
                 Debug.WriteLine("Exception when calling API: {0}", apiEx.Message);
                 Debug.WriteLine("Status Code: {0}", apiEx.ErrorCode);
                 Debug.WriteLine(apiEx.ToString());
+#endif
             }
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
 
+#if DEBUG
                 // Catch any exceptions write to console, helps w debugging :D
                 Debug.WriteLine("Exception when calling API: {0}", ex.Message);
                 Debug.WriteLine(ex.ToString());
+#endif
             }
         }
 
