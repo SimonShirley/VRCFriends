@@ -30,13 +30,15 @@ namespace VRCFriends.Business.Models
             configuration.Username = username ?? string.Empty;
             configuration.Password = password.ToPlainString();
 
-            _stateMediator.OnConfigurationChanged(configuration);
+            var mergedConfiguration = Configuration.MergeConfigurations(GlobalConfiguration.Instance, configuration);
 
-            _authenticationApi.Configuration = Configuration.MergeConfigurations(GlobalConfiguration.Instance, configuration);
+            _stateMediator.OnConfigurationChanged(mergedConfiguration);
+
+            _authenticationApi.Configuration = mergedConfiguration;
 
             // Our first request we get the ApiResponse instead of just the user object,
             // so we can see what the API expects from us
-            ApiResponse<CurrentUser> currentUserResponse = await _authenticationApi.GetCurrentUserWithHttpInfoAsync().ConfigureAwait(false);
+            ApiResponse<CurrentUser> currentUserResponse = await _authenticationApi.GetCurrentUserWithHttpInfoAsync();
 
             if (currentUserResponse.RawContent is null)
                 throw new Exception("Unable to connect to VRChat.");

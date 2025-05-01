@@ -73,7 +73,7 @@ namespace VRCFriends.ViewModels
                 {
                     ShowRefreshProgressBar = true;
 
-                    await _friendsModel.RefreshFriendsListAsync().ConfigureAwait(false);
+                    await _friendsModel.RefreshFriendsListAsync();
 
                     ShowRefreshProgressBar = false;
 

@@ -16,6 +16,9 @@ namespace VRCFriends.Business.Models
         private readonly IStateMediator _stateMediator;
         private readonly ILimitedUserDtoFactory _limitedUserDtoFactory;
 
+        private IList<LimitedUserDto> _onlineFriends = new List<LimitedUserDto>();
+        private IList<LimitedUserDto> _offlineFriends = new List<LimitedUserDto>();
+
         public FriendsModel(
             IFriendsApi friendsApi,
             IStateMediator stateMediator,
@@ -34,18 +37,24 @@ namespace VRCFriends.Business.Models
 
         public async Task RefreshFriendsListAsync()
         {
-            var offlineFriends = await GetFriendsListAsync(false);
-            var onlineFriends = await GetFriendsListAsync(true);
+            _offlineFriends.Clear();
+            _offlineFriends = await GetFriendsListAsync(false);
+
+            _onlineFriends.Clear();
+            _onlineFriends = await GetFriendsListAsync(true);
 
             LastRefresh = DateTime.Now;
 
-            _stateMediator.OnFriendsListUpdated(offlineFriends.Union(onlineFriends).ToList());
+            _stateMediator.OnFriendsListUpdated(_offlineFriends.Union(_onlineFriends).ToList());
         }
 
         private async Task<IList<LimitedUserDto>> GetFriendsListAsync(bool offline)
         {
             IList<LimitedUserDto> friendDtoList = new List<LimitedUserDto>();
 
+            // update configuration because it may have changed
+            _friendsApi.Configuration = GlobalConfiguration.Instance;
+            
             IList<LimitedUser> friendsList = _friendsApi.GetFriends(offline: offline) ?? throw new Exception("Unable to connect to VRChat.");
             
             foreach (LimitedUser friend in friendsList)
@@ -64,8 +73,16 @@ namespace VRCFriends.Business.Models
         public void Dispose()
         {
             _stateMediator.ConfigurationChanged -= StateMediator_ConfigurationChanged;
+
+            if (_offlineFriends?.Any() ?? false)
+                foreach (var friend in _offlineFriends)
+                    friend?.Dispose();
+
+            if (_onlineFriends?.Any() ?? false)
+                foreach (var friend in _onlineFriends)
+                    friend?.Dispose();
         }
 
-        public void RefreshFriendsList() => Task.Run(() => RefreshFriendsListAsync());
+        public void RefreshFriendsList() => Task.Run(RefreshFriendsListAsync);
     }
 }

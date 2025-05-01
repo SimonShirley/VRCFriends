@@ -29,6 +29,7 @@ namespace VRCFriends.Services
             services.AddTransient<IViewModelGeneratorFactory, ViewModelGeneratorFactory>();
             services.AddTransient<IInstanceDtoFactory, InstanceDtoFactory>();
             services.AddTransient<ILimitedUserDtoFactory, LimitedUserDtoFactory>();
+            services.AddTransient<IImageFactory, BitmapFactory>();
 
             services.AddSingleton<IMainWindowViewModel, MainWindowViewModel>();
 
@@ -37,6 +38,8 @@ namespace VRCFriends.Services
             services.AddTransient<IViewModel, FriendsListViewModel>();
 
             services.AddTransient<INotifyIconForm, NotifyIconForm>();
+
+            services.AddTransient<InstanceDto>();
         }
     }
 }

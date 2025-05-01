@@ -22,11 +22,18 @@ namespace VRCFriends.Business.Factories
         private readonly string _storePath;
         private readonly IInstanceDtoFactory _instanceDtoFactory;
         private readonly IInstancesApi _instancesApi;
+        private readonly IImageFactory _imageFactory;
 
-        public LimitedUserDtoFactory(IStateMediator stateMediator, IInstanceDtoFactory instanceDtoFactory, IInstancesApi instancesApi, string storePath = "")
+        public LimitedUserDtoFactory(
+            IStateMediator stateMediator,
+            IInstanceDtoFactory instanceDtoFactory,
+            IInstancesApi instancesApi,
+            IImageFactory imageFactory,
+            string storePath = "")
         {
             _instanceDtoFactory = instanceDtoFactory;
             _instancesApi = instancesApi;
+            _imageFactory = imageFactory;
 
             if (string.IsNullOrWhiteSpace(storePath))
                 storePath = Path.Combine(stateMediator.AppDataPath, "images");
@@ -54,7 +61,7 @@ namespace VRCFriends.Business.Factories
             };
         }
 
-        private async Task<Bitmap> GetAvatarImageAsync(string currentAvatarImageUrl)
+        private async Task<Image> GetAvatarImageAsync(string currentAvatarImageUrl)
         {
             HttpClient httpClient = null;
             Stream webStream = null;
@@ -70,7 +77,7 @@ namespace VRCFriends.Business.Factories
                 string cachedFilename = GetCachedFilename(currentAvatarImageUrl);
 
                 if (File.Exists(cachedFilename))
-                    return new Bitmap(cachedFilename);
+                    return _imageFactory.Create(cachedFilename);
 
                 var configuration = (Configuration)GlobalConfiguration.Instance;
 
@@ -83,7 +90,7 @@ namespace VRCFriends.Business.Factories
 
                 webStream = await httpClient.GetStreamAsync(currentAvatarImageUrl);
 
-                var bitmap = new Bitmap(webStream);
+                var bitmap = _imageFactory.Create(webStream);
                 bitmap?.Save(cachedFilename, ImageFormat.Png);
 
                 webStream.Flush();

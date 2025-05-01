@@ -80,6 +80,6 @@ namespace VRCFriends.ViewModels
             }
         }
 
-        void ILoginUsernamePasswordViewModel.LoginUser() => LoginUserAsync().RunSynchronously();
+        void ILoginUsernamePasswordViewModel.LoginUser() => Task.Run(LoginUserAsync);
     }
 }
